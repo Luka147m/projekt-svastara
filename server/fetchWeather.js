@@ -1,100 +1,45 @@
-const xml2js = require('xml2js');
-const { pool } = require('./db');
+const axios = require('axios');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const fetchWeatherData = async () => {
-  const url = 'https://vrijeme.hr/hrvatska_n.xml';
+const apiKey = process.env.WEATHER_API_KEY;
 
+async function fetchWeather({ lat, lon }) {
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
   try {
-    console.log(`[INFO] Fetching new weather data from: ${url}`);
+    const response = await axios.get(apiUrl);
+    // console.log('Weather data:', response.data);
+    let weatherType = response.data.weather[0].id;
+    let weatherConditions = response.data.weather[0].main;
+    let temperature = response.data.main.temp;
+    let feelsLike = response.data.main.feels_like;
+    let pressure = response.data.main.pressure;
+    let humidity = response.data.main.humidity;
+    let windSpeed = response.data.wind.speed;
+    let snow = response.data.snow ? response.data.snow['1h'] : 0;
+    let rain = response.data.rain ? response.data.rain['1h'] : 0;
 
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`[ERROR] HTTP error! status: ${response.status}`);
-    }
+    let formattedResponse = {
+      weatherType,
+      weatherConditions,
+      temperature,
+      feelsLike,
+      pressure,
+      humidity,
+      windSpeed,
+      snow,
+      rain,
+    };
 
-    const xml = await response.text();
+    // console.log('Formatted weather data:', formattedResponse);
 
-    const parser = new xml2js.Parser();
-    const jsonData = await parser.parseStringPromise(xml);
-
-    // console.log('[DEBUG] Parsed JSON data:', JSON.stringify(jsonData, null, 2));
-
-    const termin = parseInt(jsonData.Hrvatska.DatumTermin[0].Termin);
-    const date = jsonData.Hrvatska.DatumTermin[0].Datum;
-
-    const gradovi = Array.isArray(jsonData.Hrvatska.Grad)
-      ? jsonData.Hrvatska.Grad
-      : [jsonData.Hrvatska.Grad];
-
-    // console.log('[INFO] Fetched weather data:', gradovi);
-
-    const zagrebData = gradovi
-      .filter((grad) => grad.GradIme[0].trim().toLowerCase().includes('zagreb'))
-      .map((grad) => ({
-        termin,
-        date,
-        gradime: grad.GradIme[0].trim(),
-        lat: parseFloat(grad.Lat[0]),
-        lon: parseFloat(grad.Lon[0]),
-        podatci: {
-          temp: parseFloat(grad.Podatci[0].Temp[0]),
-          vlaga: parseInt(grad.Podatci[0].Vlaga[0], 10),
-          tlak: parseFloat(grad.Podatci[0].Tlak[0]),
-          tlaktend: parseFloat(grad.Podatci[0].TlakTend[0]),
-          vjetarsmjer: grad.Podatci[0].VjetarSmjer[0].trim(),
-          vjetarbrzina: parseFloat(grad.Podatci[0].VjetarBrzina[0]),
-          vrijeme: grad.Podatci[0].Vrijeme[0].trim(),
-          vrijemeznak: parseInt(grad.Podatci[0].VrijemeZnak[0], 10),
-        },
-      }));
-
-    // console.log('[INFO] Processed weather data:', zagrebData);
-
-    await insertWeatherData(zagrebData);
+    return formattedResponse;
   } catch (error) {
-    console.error('Error fetching or parsing the weather data:', error);
+    console.error('Error fetching weather data:', error.message);
+    throw error;
   }
-};
+}
 
-const insertWeatherData = async (data) => {
-  const client = await pool.connect();
+// fetchWeather({ lat: 45.541914470078034, lon: 11.477084301109421 });
 
-  try {
-    const query = `
-        INSERT INTO weatherdata (
-          termin, date, gradime, lat, lon, temp, vlaga, tlak, tlaktend, vjetarsmjer, vjetarbrzina, vrijeme, vrijemeznak
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-        )
-        ON CONFLICT (termin, date, gradime) DO NOTHING;
-      `;
-
-    for (const grad of data) {
-      const values = [
-        grad.termin,
-        grad.date,
-        grad.gradime,
-        grad.lat,
-        grad.lon,
-        grad.podatci.temp,
-        grad.podatci.vlaga,
-        grad.podatci.tlak,
-        grad.podatci.tlaktend,
-        grad.podatci.vjetarsmjer,
-        grad.podatci.vjetarbrzina,
-        grad.podatci.vrijeme,
-        grad.podatci.vrijemeznak,
-      ];
-
-      await client.query(query, values);
-    }
-
-    console.log('[INFO] Weather data inserted successfully!');
-  } catch (err) {
-    console.error('[ERROR] Error inserting weather data:', err);
-  } finally {
-    client.release();
-  }
-};
-
-module.exports = { fetchWeatherData };
+module.exports = { fetchWeather };
