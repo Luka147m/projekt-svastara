@@ -1,0 +1,173 @@
+Kako napraviti bazu?
+
+1. Opcija 
+samo ucitati dump.sql baze, npr dump-11-05-8000.sql 
+11.5.2025 i ima 8000 redaka u finished trips
+
+2. Opcija
+Napravi bazu u postgresu, dodaj parametre za spajanje na bazu u .env file
+DB_HOST=
+DB_DATABASE=
+DB_USER=
+DB_PASSWORD=
+Taj .env mora biti u istom direktoriju kao loadGTFS.py
+Pokreni loadGTFS.py - on ce napraviti potrebne tablice (ako nisu napravljene, inace ce obrisati prosli spremljeni gtfs static) i spremiti ce u njih najnoviji gtfs static (sam preuzima i unzipa)
+
+Nakon toga enable postgis
+
+CREATE EXTENSION postgis;
+
+Kopiraj i execute preostale sql ispod navedene
+
+CREATE OR REPLACE FUNCTION get_trip_patterns(routeParam INT)
+RETURNS JSONB AS $$
+DECLARE
+  result JSONB;
+BEGIN
+  WITH trip_patterns AS (
+    SELECT
+      t.route_id,
+      t.direction_id,
+      ARRAY_AGG(
+        COALESCE(
+          json_build_object('lat', s.stop_lat, 'lon', s.stop_lon, 'stop_sequence', st.stop_sequence),
+          json_build_object('lat', ps.stop_lat, 'lon', ps.stop_lon, 'stop_sequence', st.stop_sequence)
+        )::jsonb
+        ORDER BY st.stop_sequence
+      ) AS stop_sequence,
+      t.trip_id
+    FROM stop_times st
+    JOIN trips t ON t.trip_id = st.trip_id
+    JOIN stops s ON s.stop_id = st.stop_id
+    LEFT JOIN stops ps ON s.parent_station = ps.stop_id
+    WHERE t.route_id = $1
+    GROUP BY t.route_id, t.direction_id, t.trip_id
+  ),
+  grouped_patterns AS (
+    SELECT
+      route_id,
+      direction_id,
+      stop_sequence,
+      ARRAY_AGG(trip_id) AS trips
+    FROM trip_patterns
+    GROUP BY route_id, direction_id, stop_sequence
+  )
+  SELECT jsonb_agg(jsonb_build_object(
+    'route_id', route_id,
+    'direction_id', direction_id,
+    'trips', trips,
+    'sequence', stop_sequence
+  )) INTO result
+  FROM grouped_patterns;
+
+  RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TABLE finished_trips (
+    id SERIAL PRIMARY KEY,
+    route_id INTEGER NOT NULL,
+    trip_id TEXT NOT NULL,
+    current_stop_sequence INTEGER NOT NULL,
+    started_at TIMESTAMP NOT NULL,
+    finished_at TIMESTAMP NOT NULL,
+    reported_delay INTEGER,
+    position JSONB,
+    nextStop JSONB,
+    distance DOUBLE PRECISION,
+    weather_type INTEGER,
+    weather_conditions VARCHAR(50),
+    temperature DOUBLE PRECISION,
+    feels_like DOUBLE PRECISION,
+    pressure INTEGER,
+    humidity INTEGER,
+    wind_speed DOUBLE PRECISION,
+    snow DOUBLE PRECISION,
+    rain DOUBLE PRECISION,
+
+    traffic_position JSONB,
+    current_speed DOUBLE PRECISION,
+    free_flow_speed DOUBLE PRECISION,
+    current_travel_time DOUBLE PRECISION,
+    free_flow_travel_time DOUBLE PRECISION,
+    road_closure BOOLEAN
+);
+
+
+CREATE TABLE shapes_copy AS
+SELECT shape_id, shape_pt_lat, shape_pt_lon, shape_pt_sequence FROM shapes;
+
+ALTER TABLE shapes_copy ADD COLUMN geom geometry(Point, 4326);
+
+UPDATE shapes_copy
+SET geom = ST_SetSRID(ST_MakePoint(shape_pt_lon, shape_pt_lat), 4326);
+
+CREATE INDEX idx_shapes_copy_geom ON shapes_copy USING GIST(geom);
+
+CREATE TABLE shape_lines AS
+SELECT shape_id, 
+       ST_MakeLine(geom ORDER BY shape_pt_sequence) AS geom_line
+FROM shapes_copy
+GROUP BY shape_id;
+
+CREATE OR REPLACE FUNCTION get_query_points(route_ids integer[])
+RETURNS TABLE(jsonb jsonb) AS
+$$
+BEGIN
+  RETURN QUERY
+  WITH selected_shapes AS (
+    SELECT DISTINCT shape_id 
+    FROM trips 
+    WHERE route_id = ANY(route_ids)
+  ),
+  merged_shapes AS (
+    SELECT 
+      shape_id,
+      ST_LineMerge(ST_Collect(geom_line)) AS geom
+    FROM shape_lines
+    WHERE shape_id IN (SELECT shape_id FROM selected_shapes)
+    GROUP BY shape_id
+  ),
+  points AS (
+    SELECT
+      shape_id,
+      i AS distance_m,
+      ST_LineInterpolatePoint(
+        geom,
+        i / NULLIF(ST_Length(geom::geography), 0)
+      )::geometry(Point, 4326) AS geom
+    FROM merged_shapes,
+         generate_series(0, ST_Length(geom::geography)::int, 500) AS i
+  ),
+  clusters AS (
+    SELECT *,
+      ST_ClusterDBScan(ST_Transform(geom, 3857), 100, 2) OVER () AS cluster
+    FROM points
+  ), 
+  ranked_rows AS (
+    SELECT 
+      *,
+      ROW_NUMBER() OVER (PARTITION BY cluster) AS rn
+    FROM clusters
+    WHERE cluster IS NOT NULL
+  )
+
+  SELECT json_build_object(
+          'lat', ST_Y(geom),
+          'lon', ST_X(geom))::jsonb
+  FROM clusters
+  WHERE cluster IS NULL
+
+  UNION 
+
+  SELECT json_build_object(
+          'lat', ST_Y(geom),
+          'lon', ST_X(geom))::jsonb
+  FROM ranked_rows
+  WHERE rn = 1;
+END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT * FROM get_query_points(ARRAY[5, 17, 109, 4, 13])

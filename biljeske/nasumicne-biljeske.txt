@@ -1,0 +1,62 @@
+Pronašao sam par članaka, koji se bavi sličnim problemima i pogledao njihove ideje i pristupe problemu (linkovi ispod). Nemaju baš puno konkretno o implementaciji ali je početak. Zasad nisam ništa puno kodirao osim isprobavao API-je te vjerojatno ni neću ništa raditi narednih par ispitnih tjedana. Ali predlažem zato drugi tjedan nakon ispita da ja nešto natipkam da se može nešto vidjeti da radim, a ne da samo prodajem priču i da imamo sastanak. Više o tome nakon ispita.
+
+https://www.mdpi.com/2624-831X/5/4/29, https://www.sciencedirect.com/science/article/pii/S2772586324000017, https://ar5iv.labs.arxiv.org/html/2303.15495v3, https://research.google/blog/predicting-bus-delays-with-machine-learning/
+
+CREATE TABLE transformed_data (
+    id TEXT PRIMARY KEY,      -- Hash of the transformed data
+
+);
+
+INSERT INTO transformed_data (id, data)
+VALUES ('<hash>', '<converted_data_in_jsonb_format>')
+ON CONFLICT (id) DO NOTHING;
+
+CREATE TABLE weatherdata (
+    termin INT NOT NULL,
+    date DATE NOT NULL,
+    gradime TEXT NOT NULL,
+    lat NUMERIC(7, 4) NOT NULL,
+    lon NUMERIC(7, 4) NOT NULL,
+    temp NUMERIC(5, 2),
+    vlaga INT,
+    tlak NUMERIC(6, 2),
+    tlaktend NUMERIC(5, 2),
+    vjetarsmjer TEXT,
+    vjetarbrzina NUMERIC(5, 2),
+    vrijeme TEXT,
+    vrijemeznak INT,
+    PRIMARY KEY (termin, date, gradime)
+);
+
+
+{
+  flowSegmentData: {
+    frc: 'FRC2',
+    currentSpeed: 14,
+    freeFlowSpeed: 20,
+    currentTravelTime: 101,
+    freeFlowTravelTime: 70,
+    confidence: 1,
+    roadClosure: false,
+    coordinates: { coordinate: [Array] },
+    '@version': 'traffic-service-flow 1.0.120'
+  }
+}
+
+CREATE TABLE trafficdata (
+    id SERIAL PRIMARY KEY, -- Auto-incrementing unique identifier for each record
+    coordinates JSONB NOT NULL, -- JSONB field to store latitude and longitude
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Automatically set to current time
+    currentspeed INT, -- Current speed (e.g., in KMPH)
+    freeflowspeed INT, -- Free-flow speed (e.g., in KMPH)
+    currenttraveltime INT, -- Current travel time (e.g., in seconds)
+    freeflowtraveltime INT, -- Free-flow travel time (e.g., in seconds)
+    roadclosure BOOLEAN NOT NULL -- Whether the road is closed or not
+);
+
+
+https://api.tomtom.com/traffic/services/4/flowSegmentData/relative0/20/json?point=45.81003,15.98952&unit=KMPH&openLr=false&key=QSvmF7Ce
+87f2yyZnSRje1V2hkt3I9b5b
+
+[ERROR] URL: https://api.tomtom.com/traffic/services/4/flowSegmentData/relative0/20/json?point=45.81050,15.98686&unit=KMPH&openLr=false&key=QSvmF7Ce
+87f2yyZnSRje1V2hkt3I9b5b

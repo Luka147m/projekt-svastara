@@ -1,7 +1,7 @@
 const GtfsRealtimeBindings = require('gtfs-realtime-bindings');
 
 const feedUrl = 'https://www.zet.hr/gtfs-rt-protobuf';
-const promatraneLinije = [5, 17, 109];
+const promatraneLinije = [5, 17, 109, 13, 4];
 
 async function fetchZetData() {
   try {
@@ -67,6 +67,7 @@ function convertUnixToLocalTime(unixTime) {
   const formattedDate = date.toISOString().slice(0, 19).replace('T', ' ');
   return formattedDate;
 }
+
 function parseEntity(entity, stops, vehicles) {
   try {
     if (entity.vehicle && entity.vehicle.trip) {

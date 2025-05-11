@@ -1,12 +1,23 @@
-// const { pool } = require('./db');
 const dotenv = require('dotenv');
 dotenv.config();
 
 const key = process.env.TOMTOM_API_KEY;
 
+/*
+zoom level, meters per pixel, meters per tile side
+16
+	2.3887	611.496
+
+17
+	1.1943	305.748
+
+18
+	0.5972	152.874
+*/
+
 const versionNumber = '4';
 const style = 'relative0';
-const zoom = '18';
+const zoom = '17';
 const format = 'json';
 const unit = 'KMPH';
 const openLr = 'false';
@@ -65,18 +76,5 @@ async function fetchTrafficData(coordinates) {
     roadClosure: segment.roadClosure,
   };
 }
-
-// async function storeTrafficData(data, coordinates) {
-//   const query = `
-//         INSERT INTO trafficdata (coordinates, currentspeed, freeflowspeed, currenttraveltime, freeflowtraveltime, roadclosure)
-//         VALUES ($1, $2, $3, $4, $5, $6)
-//     `;
-
-//   try {
-//     await pool.query(query, values);
-//   } catch (err) {
-//     console.error('[ERROR] Error storing traffic data:', err);
-//   }
-// }
 
 module.exports = { fetchTrafficData };

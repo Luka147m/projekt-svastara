@@ -1,5 +1,5 @@
-const express = require('express');
-const app = express();
+// const express = require('express');
+// const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 const { pool } = require('./db');
@@ -9,9 +9,9 @@ const { fetchWeather } = require('./fetchWeather');
 const { fetchTrafficData } = require('./fetchTrafficData');
 const { calculateWeatherPoints } = require('./calculateWeatherPoints');
 
-const TOMTOM_API_LIMIT = 2500;
+// const TOMTOM_API_LIMIT = 2500;
 const MAX_BUFFER_SIZE = 100;
-const promatraneLinije = [5, 17, 109];
+const promatraneLinije = [5, 17, 109, 4, 13];
 
 const activeTrips = new Map();
 let finishedTripsBuffer = [];
@@ -155,7 +155,7 @@ function haversine(lat1, lon1, lat2, lon2) {
 
 function cleanupActiveTrips() {
   const now = new Date();
-  const MAX_AGE_MS = 5 * 60 * 1000; // 5 minutes
+  const MAX_AGE_MS = 5 * 60 * 1000; // 5 minuta
 
   let removed = 0;
   for (const [tripId, tripData] of activeTrips.entries()) {
@@ -173,40 +173,71 @@ function cleanupActiveTrips() {
 }
 
 async function flushFinishedTrips() {
-  if (finishedTripsBuffer.length > 0) {
-    try {
-      // Start a transaction
-      const client = await pool.connect();
-      await client.query('BEGIN');
+  if (finishedTripsBuffer.length === 0) return;
 
-      // Bulk insert query
-      const query = `
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    for (const trip of finishedTripsBuffer) {
+      // console.log(trip);
+      const weather = JSON.parse(trip.weather || '{}');
+      const traffic = JSON.parse(trip.traffic || '{}');
+
+      await client.query(
+        `
         INSERT INTO finished_trips (
-          route_id, trip_id, current_stop_sequence, started_at, reported_delay, position,
-          next_stop, distance, finished_at, weather, traffic
-        ) VALUES 
-        ${finishedTripsBuffer
-          .map(
-            (trip) =>
-              `(${trip.routeId}, ${trip.tripId}, ${trip.currentStopSequence}, '${trip.startedAt}', 
-              ${trip.reportedDelay}, '${trip.position}', '${trip.nextStop}', ${trip.distance}, '${trip.finishedAt}', 
-              '${trip.weather}', '${trip.traffic}')`
-          )
-          .join(', ')};
-      `;
-
-      await client.query(query);
-
-      await client.query('COMMIT');
-
-      console.log(
-        `[INFO] Inserted ${finishedTripsBuffer.length} finished trips.`
+          route_id, trip_id, current_stop_sequence, started_at, finished_at, reported_delay,
+          position, nextStop, distance, weather_type, weather_conditions, temperature,
+          feels_like, pressure, humidity, wind_speed, snow, rain,
+          traffic_position, current_speed, free_flow_speed, current_travel_time,
+          free_flow_travel_time, road_closure
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6,
+          $7, $8, $9, $10, $11, $12,
+          $13, $14, $15, $16, $17, $18,
+          $19, $20, $21, $22, $23, $24
+        )
+        `,
+        [
+          trip.routeId,
+          trip.tripId,
+          trip.currentStopSequence,
+          trip.startedAt,
+          trip.finishedAt,
+          trip.reportedDelay,
+          trip.position,
+          trip.nextStop,
+          trip.distance,
+          weather.weatherType,
+          weather.weatherConditions,
+          weather.temperature,
+          weather.feelsLike,
+          weather.pressure,
+          weather.humidity,
+          weather.windSpeed,
+          weather.snow,
+          weather.rain,
+          traffic.coordinates,
+          traffic.currentSpeed,
+          traffic.freeFlowSpeed,
+          traffic.currentTravelTime,
+          traffic.freeFlowTravelTime,
+          traffic.roadClosure,
+        ]
       );
-      finishedTripsBuffer = [];
-      client.release();
-    } catch (error) {
-      console.error('[ERROR] Bulk insert failed:', error);
     }
+
+    await client.query('COMMIT');
+    console.log(
+      `[INFO] Inserted ${finishedTripsBuffer.length} finished trips.`
+    );
+    finishedTripsBuffer = [];
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('[ERROR] Insert failed:', error);
+  } finally {
+    client.release();
   }
 }
 
@@ -242,7 +273,7 @@ async function fetchTraffic() {
           `[INFO] Removing point from query: ${JSON.stringify(point)}`
         );
         queryCoordinates.splice(i, 1);
-        i--; // adjust index after removal
+        i--; // adjust index
       }
     }
   }
@@ -253,33 +284,12 @@ async function fetchTraffic() {
 // });
 
 async function startServer() {
-  // Koordinate za query prometnih podataka i vremenskih podataka, bazirani na stanicama
-  // Prvo dohvati iz baze podataka (static data) stanice na promatranim linijama
-  let stopsQuery = '';
-  for (let i = 0; i < promatraneLinije.length; i++) {
-    const line = promatraneLinije[i];
-    stopsQuery += `
-      SELECT json_build_object(
-        'lat', COALESCE(ps.stop_lat, s.stop_lat),
-        'lon', COALESCE(ps.stop_lon, s.stop_lon))::jsonb AS jsonb
-      FROM stop_times
-      JOIN stops s USING(stop_id)
-      LEFT JOIN stops ps ON s.parent_station = ps.stop_id
-      WHERE trip_id = (
-        SELECT trip_id
-        FROM trips
-        WHERE route_id = ${line}
-        LIMIT 1
-      )`;
-
-    if (i < promatraneLinije.length - 1) {
-      stopsQuery += ' UNION ';
-    }
-  }
-
+  // Koordinate za query prometnih podataka i vremenskih podataka
+  // Tocke se racunaju s obzirom na rutu (interpolacija rute)
   try {
-    const result = await pool.query(stopsQuery);
-    // console.log('[INFO] Stops query result:', result.rows);
+    let pointsQuery = 'SELECT * FROM get_query_points($1::int[])';
+    const result = await pool.query(pointsQuery, [promatraneLinije]);
+    // console.log('[INFO] Points query result:', result.rows);
     queryCoordinates = result.rows.map((row) => {
       const { lat, lon } = row.jsonb;
       return { lat, lon };
@@ -290,9 +300,10 @@ async function startServer() {
     return;
   }
 
-  // console.log('[INFO] Query coordinates:', queryCoordinates.length);
+  console.log('[INFO] Query coordinates:', queryCoordinates.length);
   weatherPoints = calculateWeatherPoints(queryCoordinates);
   // console.log('[INFO] Weather points:', weatherPoints);
+  console.log('[INFO] Weather points count:', weatherPoints.length);
 
   // Pre-baked raspored stanica i poredak (da izbjegnem pozive bazi)
   for (let i = 0; i < promatraneLinije.length; i++) {
@@ -306,8 +317,8 @@ async function startServer() {
       // );
 
       if (result.rows.length > 0) {
-        const jsonArray = result.rows[0].get_trip_patterns; // already an array
-        tripPatternsMap.set(routeId, jsonArray); // set it directly
+        const jsonArray = result.rows[0].get_trip_patterns;
+        tripPatternsMap.set(routeId, jsonArray);
       }
     } catch (error) {
       console.error('[ERROR] Error:', error);
@@ -321,14 +332,15 @@ async function startServer() {
   setInterval(fetchWeatherData, 15 * 60 * 1000); // 15 minuta
 
   await fetchTraffic(); // Fetch once
-  setInterval(fetchTraffic, 10 * 60 * 1000); // 7-22hrs, 2500 poziva dnevno otprilike 50 poziva po grupi, otprilike svakih 18 minuta mogu
+  setInterval(fetchTraffic, 15 * 60 * 1000); // 7-22hrs, 2500 poziva dnevno otprilike 50 poziva po grupi, otprilike svakih 18 minuta mogu
   // Nesto su promjenili pa se ovo racuna kao free tile request kojih mogu 50000 dnevno, prije se racunao kao nontile koji je bio 2500 dnevno???
+  // 250 tocaka otprilike za ispitati, 50000 dnevnih upita, otprilike svakih 15 minuta
 
   await fetchAndRefreshData();
   setInterval(fetchAndRefreshData, 10000); // 10 sekundi
 
   setInterval(cleanupActiveTrips, 60 * 1000 * 3);
-  setInterval(flushFinishedTrips, 1000 * 60 * 5);
+  setInterval(flushFinishedTrips, 1000 * 60 * 2);
 
   // app.listen(8080, () => {
   //   console.log('[INFO] Server started on port 8080');

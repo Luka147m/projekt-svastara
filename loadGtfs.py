@@ -174,7 +174,7 @@ if __name__ == "__main__":
             """,
             """
             CREATE TABLE IF NOT EXISTS shapes (
-                shape_id VARCHAR(50),
+                shape_id VARCHAR(20),
                 shape_pt_lat DOUBLE PRECISION,
                 shape_pt_lon DOUBLE PRECISION,
                 shape_pt_sequence INT,
@@ -219,7 +219,7 @@ if __name__ == "__main__":
                 trip_short_name VARCHAR(50),
                 direction_id INT,
                 block_id INT,
-                shape_id INT,
+                shape_id VARCHAR(20),
                 PRIMARY KEY (trip_id)
             );
             """

@@ -1,5 +1,4 @@
 const xml2js = require('xml2js');
-const { pool } = require('./db');
 
 const fetchWeatherData = async () => {
   const url = 'https://vrijeme.hr/hrvatska_n.xml';
@@ -49,51 +48,8 @@ const fetchWeatherData = async () => {
       }));
 
     // console.log('[INFO] Processed weather data:', zagrebData);
-
-    await insertWeatherData(zagrebData);
   } catch (error) {
     console.error('Error fetching or parsing the weather data:', error);
-  }
-};
-
-const insertWeatherData = async (data) => {
-  const client = await pool.connect();
-
-  try {
-    const query = `
-        INSERT INTO weatherdata (
-          termin, date, gradime, lat, lon, temp, vlaga, tlak, tlaktend, vjetarsmjer, vjetarbrzina, vrijeme, vrijemeznak
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-        )
-        ON CONFLICT (termin, date, gradime) DO NOTHING;
-      `;
-
-    for (const grad of data) {
-      const values = [
-        grad.termin,
-        grad.date,
-        grad.gradime,
-        grad.lat,
-        grad.lon,
-        grad.podatci.temp,
-        grad.podatci.vlaga,
-        grad.podatci.tlak,
-        grad.podatci.tlaktend,
-        grad.podatci.vjetarsmjer,
-        grad.podatci.vjetarbrzina,
-        grad.podatci.vrijeme,
-        grad.podatci.vrijemeznak,
-      ];
-
-      await client.query(query, values);
-    }
-
-    console.log('[INFO] Weather data inserted successfully!');
-  } catch (err) {
-    console.error('[ERROR] Error inserting weather data:', err);
-  } finally {
-    client.release();
   }
 };
 
