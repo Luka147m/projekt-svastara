@@ -1,0 +1,72 @@
+Tramvaj 4 započeo sa 22 stanice u 11:09:31, očekivano vrijeme dolaska na narednu stanicu 23 je 11:11:55, stvarno vrijeme dolaska 2025-05-12 11:13:05
+Tramvaj 5 započeo sa 22 stanice u 15:34:43, očekivano vrijeme dolaska na narednu stanicu 23 je 15:37:39, stvarno vrijeme dolaska 2025-05-11 15:36:35
+Tramvaj 4 započeo sa 5 stanice u 16:21:07, očekivano vrijeme dolaska na narednu stanicu 6 je 16:22:36, stvarno vrijeme dolaska 2025-05-13 16:22:14
+Tramvaj 17 započeo sa 15 stanice u 17:36:22, očekivano vrijeme dolaska na narednu stanicu 16 je 17:37:47, stvarno vrijeme dolaska 2025-05-12 17:37:27
+Tramvaj 4 započeo sa 25 stanice u 09:46:14, očekivano vrijeme dolaska na narednu stanicu 26 je 09:47:54, stvarno vrijeme dolaska 2025-05-14 09:47:04
+Tramvaj 13 započeo sa 23 stanice u 11:20:01, očekivano vrijeme dolaska na narednu stanicu 24 je 11:21:31, stvarno vrijeme dolaska 2025-05-13 11:21:21
+Tramvaj 17 započeo sa 14 stanice u 15:57:36, očekivano vrijeme dolaska na narednu stanicu 15 je 15:59:43, stvarno vrijeme dolaska 2025-05-13 16:00:31
+Tramvaj 17 započeo sa 21 stanice u 13:47:55, očekivano vrijeme dolaska na narednu stanicu 22 je 13:49:43, stvarno vrijeme dolaska 2025-05-13 13:49:28
+Tramvaj 4 započeo sa 20 stanice u 06:51:40, očekivano vrijeme dolaska na narednu stanicu 21 je 06:54:08, stvarno vrijeme dolaska 2025-05-12 06:53:32
+Tramvaj 17 započeo sa 2 stanice u 07:25:21, očekivano vrijeme dolaska na narednu stanicu 3 je 07:26:52, stvarno vrijeme dolaska 2025-05-12 07:26:32
+
+
+Training Loss (MSE): 1580.2980
+Validation Loss (MSE): 1629.9922
+Training MAE: 29.2435 seconds
+Validation MAE: 29.8322 seconds
+
+Test MAE: 29.11 seconds
+
+Postotak predviđenih vremena dolaska unutar granice pogreške od ±10 sekundi: 24.23%
+Postotak predviđenih vremena dolaska unutar granice pogreške od ±30 sekundi: 62.80%
+Postotak predviđenih vremena dolaska unutar granice pogreške od ±60 sekundi: 89.24%
+Postotak predviđenih vremena dolaska unutar granice pogreške od ±120 sekundi: 98.64%
+
+UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql(query, conn)
+2025-05-15 18:25:02.403833: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-05-15 18:25:02.770428: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1616] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 9403 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 4070 SUPER, pci bus id: 0000:01:00.0, compute capability: 8.9
+Epoch 1/20
+2025-05-15 18:25:03.645108: I tensorflow/stream_executor/cuda/cuda_blas.cc:1614] TensorFloat-32 will be used for the matrix multiplication. This will only be logged once.
+774/774 [==============================] - 2s 2ms/step - loss: 3526.4373 - mae: 43.8548 - val_loss: 1852.4822 - val_mae: 32.6105
+Epoch 2/20
+774/774 [==============================] - 1s 1ms/step - loss: 1832.6101 - mae: 32.2077 - val_loss: 1824.2391 - val_mae: 32.2861
+Epoch 3/20
+774/774 [==============================] - 1s 1ms/step - loss: 1808.5978 - mae: 31.9490 - val_loss: 1810.8688 - val_mae: 32.3120
+Epoch 4/20
+774/774 [==============================] - 1s 1ms/step - loss: 1783.0552 - mae: 31.6701 - val_loss: 1791.5935 - val_mae: 31.6225
+Epoch 5/20
+774/774 [==============================] - 1s 1ms/step - loss: 1757.6534 - mae: 31.3630 - val_loss: 1764.8466 - val_mae: 31.4158
+Epoch 6/20
+774/774 [==============================] - 1s 2ms/step - loss: 1730.4154 - mae: 31.0973 - val_loss: 1741.9896 - val_mae: 31.1567
+Epoch 7/20
+774/774 [==============================] - 1s 2ms/step - loss: 1702.8457 - mae: 30.7652 - val_loss: 1738.5647 - val_mae: 31.0692
+Epoch 8/20
+774/774 [==============================] - 1s 2ms/step - loss: 1677.6255 - mae: 30.4345 - val_loss: 1702.3656 - val_mae: 30.9187
+Epoch 9/20
+774/774 [==============================] - 1s 2ms/step - loss: 1662.6891 - mae: 30.1896 - val_loss: 1700.2618 - val_mae: 31.1053
+Epoch 10/20
+774/774 [==============================] - 1s 2ms/step - loss: 1648.8724 - mae: 30.0362 - val_loss: 1679.8922 - val_mae: 30.3982
+Epoch 11/20
+774/774 [==============================] - 1s 2ms/step - loss: 1637.0458 - mae: 29.8474 - val_loss: 1675.4249 - val_mae: 30.3736
+Epoch 12/20
+774/774 [==============================] - 1s 2ms/step - loss: 1629.3539 - mae: 29.7776 - val_loss: 1669.8848 - val_mae: 30.1565
+Epoch 13/20
+774/774 [==============================] - 1s 2ms/step - loss: 1620.3022 - mae: 29.6273 - val_loss: 1674.6638 - val_mae: 30.7347
+Epoch 14/20
+774/774 [==============================] - 1s 2ms/step - loss: 1617.0645 - mae: 29.6074 - val_loss: 1676.7211 - val_mae: 30.6481
+Epoch 15/20
+774/774 [==============================] - 1s 2ms/step - loss: 1610.8160 - mae: 29.5273 - val_loss: 1661.8887 - val_mae: 30.3573
+Epoch 16/20
+774/774 [==============================] - 1s 2ms/step - loss: 1604.0808 - mae: 29.4620 - val_loss: 1647.0045 - val_mae: 30.0404
+Epoch 17/20
+774/774 [==============================] - 1s 2ms/step - loss: 1598.9109 - mae: 29.3949 - val_loss: 1643.6082 - val_mae: 29.7570
+Epoch 18/20
+774/774 [==============================] - 1s 2ms/step - loss: 1592.9319 - mae: 29.3342 - val_loss: 1651.5846 - val_mae: 29.8670
+Epoch 19/20
+774/774 [==============================] - 1s 2ms/step - loss: 1585.3536 - mae: 29.2566 - val_loss: 1639.8499 - val_mae: 29.9389
+Epoch 20/20
+774/774 [==============================] - 1s 2ms/step - loss: 1580.2980 - mae: 29.2435 - val_loss: 1629.9922 - val_mae: 29.8322
+287/287 [==============================] - 0s 1ms/step - loss: 1546.2719 - mae: 29.1076
+287/287 [==============================] - 0s 528us/step
