@@ -1,0 +1,18 @@
+\babel@toc {croatian}{}\relax 
+\babel@toc {croatian}{}\relax 
+\babel@toc {croatian}{}\relax 
+\babel@toc {croatian}{}\relax 
+\contentsline {chapter}{Sa\v {z}etak}{1}{Doc-Start}%
+\babel@toc {croatian}{}\relax 
+\babel@toc {croatian}{}\relax 
+\babel@toc {croatian}{}\relax 
+\contentsline {chapter}{\numberline {1.}Uvod}{3}{chapter.1}%
+\contentsline {chapter}{\numberline {2.}Prikupljanje i obrada podataka}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1.}Opis podataka}{6}{section.2.1}%
+\contentsline {section}{\numberline {2.2.}Obrada podataka}{8}{section.2.2}%
+\contentsline {chapter}{\numberline {3.}Prediktivni model}{12}{chapter.3}%
+\contentsline {section}{\numberline {3.1.}Neuronska mreža}{13}{section.3.1}%
+\contentsline {chapter}{\numberline {4.}Prototipna aplikacija}{17}{chapter.4}%
+\contentsline {section}{\numberline {4.1.}Rezultati}{18}{section.4.1}%
+\contentsline {chapter}{\numberline {5.}Zaključak}{22}{chapter.5}%
+\contentsline {chapter}{Literatura}{23}{chapter*.16}%

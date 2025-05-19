@@ -1,0 +1,109 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0" version="27.0.5">
+  <diagram name="Page-1" id="mLgz0Qp9d8xKYsqhQWvO">
+    <mxGraphModel dx="1377" dy="759" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="BoZDByJMLtlRcte05xz--1" value="&lt;div&gt;Broj rute&lt;/div&gt;&lt;div&gt;Vrijeme polaska&lt;br&gt;Kašnjenje&lt;br&gt;Udaljenost&lt;br&gt;Tip vremena&lt;br&gt;Temperatura&lt;br&gt;Osjećaj&lt;br&gt;Tlak&lt;/div&gt;&lt;div&gt;Vlažnost&lt;br&gt;Padaline&lt;/div&gt;&lt;div&gt;Trenutna brzina&lt;br&gt;Brzina prometa&lt;br&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="110" y="270" width="100" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--2" value="Ulazni podaci" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="130" y="470" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--4" value="Normalizacija značajki" style="rounded=0;whiteSpace=wrap;html=1;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="240" y="270" width="40" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--5" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="BoZDByJMLtlRcte05xz--1" target="BoZDByJMLtlRcte05xz--4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="490" as="sourcePoint" />
+            <mxPoint x="450" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--6" value="Ulazni sloj" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;horizontal=0;" vertex="1" parent="1">
+          <mxGeometry x="310" y="270" width="40" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--7" value="Prvi skriveni sloj (320 neurona)" style="rounded=0;whiteSpace=wrap;html=1;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="380" y="220" width="40" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--8" value="Peti skriveni sloj (5 neurona)" style="rounded=0;whiteSpace=wrap;html=1;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="660" y="280" width="40" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--9" value="Treći skriveni sloj (100 neurona)" style="rounded=0;whiteSpace=wrap;html=1;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="250" width="40" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--10" value="Četvrti skriveni sloj (40 neurona)" style="rounded=0;whiteSpace=wrap;html=1;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="590" y="260" width="40" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--11" value="Drugi skriveni sloj (200 neurona)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=middle;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="450" y="240" width="40" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--12" value="Izlazni sloj" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;horizontal=0;" vertex="1" parent="1">
+          <mxGeometry x="730" y="325" width="40" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--14" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="369.67" as="sourcePoint" />
+            <mxPoint x="310" y="369.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--15" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="350" y="369.67" as="sourcePoint" />
+            <mxPoint x="380" y="369.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--16" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="420" y="369.67" as="sourcePoint" />
+            <mxPoint x="450" y="369.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--17" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="490" y="369.67" as="sourcePoint" />
+            <mxPoint x="520" y="369.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--19" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="560" y="369.67" as="sourcePoint" />
+            <mxPoint x="590" y="369.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--20" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="630" y="369.67" as="sourcePoint" />
+            <mxPoint x="660" y="369.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--21" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="700" y="369.67" as="sourcePoint" />
+            <mxPoint x="730" y="369.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--22" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="540" as="sourcePoint" />
+            <mxPoint x="720" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--24" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="720" y="510" as="sourcePoint" />
+            <mxPoint x="720" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--25" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="540" as="sourcePoint" />
+            <mxPoint x="360" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BoZDByJMLtlRcte05xz--26" value="Skriveni slojevi" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="460" y="540" width="160" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
